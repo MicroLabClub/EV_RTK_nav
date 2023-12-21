@@ -11,12 +11,20 @@ import random
 
 serial_path = '/dev/ttyACM0'
 
-if os.path.exists(serial_path):
-    stream = Serial(serial_path, 9600)
-    nmr = NMEAReader(stream)
-else:
+try:
+    if os.path.exists(serial_path):
+        stream = Serial(serial_path, 9600)
+        nmr = NMEAReader(stream)
+        print("RTK Connected!")
+    else:
+        stream = None
+        nmr = None
+        print("ERROR: RTK IS NOT Connected!")
+except:
     stream = None
     nmr = None
+    print("ERROR: RTK IS NOT Connected!")
+
 
 MQTTURL = "9b7b323ee67e46d18f9317162c8e8841.s1.eu.hivemq.cloud"
 MQTTUSERNAME = "sergiu.doncila"
@@ -194,6 +202,6 @@ with open(filename, 'a') as file:
         send_mqtt_message("microlab/automotive/device/atv/coordinates", stringy(pos))
         send_mqtt_message("microlab/automotive/device/atv/distance", str(d))
         file.write(string+"\n")
-        sleep(60)
+        sleep(5)
 
 mqttClient.disconnect()
